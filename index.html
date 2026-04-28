@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de registro e ingreso de personal para partido político. Registra nuevos miembros con información de cédula, ciudad, sector y más.">
+    <title>Registro de Personal — Fuerza del Pueblo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Background Particles -->
+    <div class="bg-particles" aria-hidden="true">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+        <div class="particle p6"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="main-header" id="main-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <img src="logo-fp.png" alt="Logo Fuerza del Pueblo" class="logo-img">
+                <div>
+                    <h1 class="header-title">Fuerza del Pueblo</h1>
+                    <p class="header-subtitle">Registro de Personal</p>
+                    <p class="header-slogan">✦ Caminemos juntos con Leonel ✦</p>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-badge" id="stat-total">
+                    <span class="stat-number" id="total-count">0</span>
+                    <span class="stat-label">Registrados</span>
+                </div>
+                <div class="stat-badge" id="stat-today">
+                    <span class="stat-number" id="today-count">0</span>
+                    <span class="stat-label">Hoy</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Navigation Tabs -->
+        <nav class="tabs-nav" id="tabs-nav">
+            <button class="tab-btn active" data-tab="registro" id="tab-registro">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <line x1="19" y1="8" x2="19" y2="14"/>
+                    <line x1="22" y1="11" x2="16" y2="11"/>
+                </svg>
+                Nuevo Registro
+            </button>
+            <button class="tab-btn" data-tab="listado" id="tab-listado">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Listado de Miembros
+            </button>
+        </nav>
+
+        <!-- Registration Form Section -->
+        <section class="tab-content active" id="section-registro">
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h2>Formulario de Registro</h2>
+                    <p>Complete los datos del nuevo miembro del partido</p>
+                </div>
+                <form id="registration-form" autocomplete="off">
+                    <div class="form-grid">
+                        <!-- Cédula -->
+                        <div class="form-group full-width">
+                            <label for="cedula">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                                    <line x1="2" y1="10" x2="22" y2="10"/>
+                                </svg>
+                                Número de Cédula Dominicana
+                            </label>
+                            <input type="text" id="cedula" name="cedula" placeholder="000-0000000-0" maxlength="13" required>
+                            <span class="field-hint">Formato: 000-0000000-0</span>
+                            <span class="field-error" id="cedula-error"></span>
+                        </div>
+
+                        <!-- Nombre Completo -->
+                        <div class="form-group full-width">
+                            <label for="nombre">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                Nombre Completo
+                            </label>
+                            <input type="text" id="nombre" name="nombre" placeholder="Ingrese el nombre completo" required>
+                            <span class="field-error" id="nombre-error"></span>
+                        </div>
+
+                        <!-- Ciudad -->
+                        <div class="form-group">
+                            <label for="ciudad">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 21h18"/>
+                                    <path d="M5 21V7l8-4v18"/>
+                                    <path d="M19 21V11l-6-4"/>
+                                    <path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/>
+                                </svg>
+                                Ciudad
+                            </label>
+                            <select id="ciudad" name="ciudad" required>
+                                <option value="">Seleccione una ciudad</option>
+                                <option value="Santo Domingo">Santo Domingo</option>
+                                <option value="Santiago de los Caballeros">Santiago de los Caballeros</option>
+                                <option value="San Pedro de Macorís">San Pedro de Macorís</option>
+                                <option value="La Romana">La Romana</option>
+                                <option value="San Francisco de Macorís">San Francisco de Macorís</option>
+                                <option value="Puerto Plata">Puerto Plata</option>
+                                <option value="La Vega">La Vega</option>
+                                <option value="San Cristóbal">San Cristóbal</option>
+                                <option value="Higüey">Higüey</option>
+                                <option value="Bonao">Bonao</option>
+                                <option value="Baní">Baní</option>
+                                <option value="Moca">Moca</option>
+                                <option value="Azua">Azua</option>
+                                <option value="San Juan de la Maguana">San Juan de la Maguana</option>
+                                <option value="Barahona">Barahona</option>
+                                <option value="Monte Plata">Monte Plata</option>
+                                <option value="Cotuí">Cotuí</option>
+                                <option value="Nagua">Nagua</option>
+                                <option value="Esperanza">Esperanza</option>
+                                <option value="Hato Mayor">Hato Mayor</option>
+                                <option value="Otra">Otra</option>
+                            </select>
+                            <span class="field-error" id="ciudad-error"></span>
+                        </div>
+
+                        <!-- Sector -->
+                        <div class="form-group">
+                            <label for="sector">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                Sector
+                            </label>
+                            <input type="text" id="sector" name="sector" required>
+                            <span class="field-error" id="sector-error"></span>
+                        </div>
+
+                        <!-- Fecha de Nacimiento -->
+                        <div class="form-group">
+                            <label for="fecha-nacimiento">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                Fecha de Nacimiento
+                            </label>
+                            <input type="date" id="fecha-nacimiento" name="fechaNacimiento" required>
+                            <span class="field-error" id="fecha-nacimiento-error"></span>
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="form-group">
+                            <label for="telefono">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                                Teléfono
+                            </label>
+                            <input type="tel" id="telefono" name="telefono" placeholder="(809) 000-0000">
+                            <span class="field-error" id="telefono-error"></span>
+                        </div>
+
+                        <!-- Estudios o Profesión -->
+                        <div class="form-group">
+                            <label for="estudios">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                    <path d="M6 12v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5"/>
+                                </svg>
+                                Estudios o Profesión
+                            </label>
+                            <input type="text" id="estudios" name="estudios" placeholder="Ej: Licenciatura en Derecho, Ingeniería Civil..." required>
+                            <span class="field-error" id="estudios-error"></span>
+                        </div>
+
+                        <!-- Área en la que ejerce -->
+                        <div class="form-group">
+                            <label for="area">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                                    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                                </svg>
+                                Área en la que Ejerce
+                            </label>
+                            <select id="area" name="area" required>
+                                <option value="">Seleccione un área</option>
+                                <option value="Ingeniería">Ingeniería</option>
+                                <option value="Área de Salud">Área de Salud</option>
+                                <option value="Áreas Legales">Áreas Legales</option>
+                                <option value="Educación">Educación</option>
+                                <option value="Administración y Negocios">Administración y Negocios</option>
+                                <option value="Tecnología e Informática">Tecnología e Informática</option>
+                                <option value="Comunicación y Medios">Comunicación y Medios</option>
+                                <option value="Agricultura y Medio Ambiente">Agricultura y Medio Ambiente</option>
+                                <option value="Artes y Cultura">Artes y Cultura</option>
+                                <option value="Construcción">Construcción</option>
+                                <option value="Comercio y Ventas">Comercio y Ventas</option>
+                                <option value="Transporte y Logística">Transporte y Logística</option>
+                                <option value="Turismo y Hotelería">Turismo y Hotelería</option>
+                                <option value="Seguridad y Defensa">Seguridad y Defensa</option>
+                                <option value="Servicios Financieros">Servicios Financieros</option>
+                                <option value="Trabajo Social">Trabajo Social</option>
+                                <option value="Ciencias Políticas">Ciencias Políticas</option>
+                                <option value="Deportes">Deportes</option>
+                                <option value="Estudiante">Estudiante</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                            <span class="field-error" id="area-error"></span>
+                        </div>
+
+                        <!-- Presidente de Intermedio -->
+                        <div class="form-group full-width">
+                            <label for="presidente-intermedio">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                Presidente de Intermedio
+                            </label>
+                            <input type="text" id="presidente-intermedio" name="presidenteIntermedio" placeholder="Nombre del presidente de intermedio" required>
+                            <span class="field-error" id="presidente-intermedio-error"></span>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="btn-limpiar" onclick="limpiarFormulario()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="1 4 1 10 7 10"/>
+                                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                            </svg>
+                            Limpiar
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btn-registrar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <line x1="19" y1="8" x2="19" y2="14"/>
+                                <line x1="22" y1="11" x2="16" y2="11"/>
+                            </svg>
+                            Registrar Miembro
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Members List Section -->
+        <section class="tab-content" id="section-listado">
+            <div class="list-card">
+                <div class="list-header">
+                    <div>
+                        <h2>Miembros Registrados</h2>
+                        <p>Listado completo de miembros del partido</p>
+                    </div>
+                    <div class="list-actions">
+                        <div class="search-box" id="search-box">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                            <input type="text" id="search-input" placeholder="Buscar por nombre, cédula o ciudad...">
+                        </div>
+                        <button class="btn btn-outline" id="btn-exportar" onclick="exportarCSV()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Exportar CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-wrapper" id="table-wrapper">
+                    <table id="members-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Cédula</th>
+                                <th>Nombre</th>
+                                <th>Ciudad</th>
+                                <th>Sector</th>
+                                <th>Fecha Nac.</th>
+                                <th>Estudios</th>
+                                <th>Área</th>
+                                <th>Pres. Intermedio</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="members-tbody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="empty-state">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <h3>No hay miembros registrados</h3>
+                    <p>Los nuevos registros aparecerán aquí</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+        </div>
+        <span class="toast-message" id="toast-message">Registro exitoso</span>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="delete-modal">
+            <div class="modal-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+            </div>
+            <h3>¿Eliminar este registro?</h3>
+            <p>Esta acción no se puede deshacer.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="btn-cancel-delete" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn btn-danger" id="btn-confirm-delete" onclick="confirmarEliminar()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Password Modal -->
+    <div class="modal-overlay" id="auth-overlay">
+        <div class="modal" id="auth-modal">
+            <div class="modal-icon auth-lock-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+            </div>
+            <h3>Acceso Protegido</h3>
+            <p>Ingrese la clave para ver el listado de miembros</p>
+            <input type="password" id="auth-pin" class="auth-pin-input" placeholder="Ingrese la clave" maxlength="20" autocomplete="off">
+            <p class="auth-error" id="auth-error">Clave incorrecta</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="btn-cancel-auth" onclick="cerrarAuth()">Cancelar</button>
+                <button class="btn btn-primary" id="btn-confirm-auth" onclick="verificarClave()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    Desbloquear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <p>© 2026 — Fuerza del Pueblo · <em>Caminemos juntos con Leonel</em></p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
