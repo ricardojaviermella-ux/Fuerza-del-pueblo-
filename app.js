@@ -1,8 +1,13 @@
 /* ===================================================================
    App.js — Registro de Personal del Partido Político
-   Toda la lógica: validación, CRUD, persistencia localStorage,
+   Lógica: validación, CRUD, Google Sheets como base de datos,
    búsqueda, exportación CSV y UI interactiva.
    =================================================================== */
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  CONFIGURACIÓN — Pega aquí tu URL de Google Apps Script     ║
+// ╚══════════════════════════════════════════════════════════════╝
+const GOOGLE_SCRIPT_URL = https://script.googleusercontent.com/macros/echo user_content_key=AUkAhnQYvuE_yomuhQ43F1a5EmiKKL8ETbmiR8jRRXkHzuAinQS7IeruYrNJALy3ZqzcBvL_gBn6qmQ-5nstdZ-mhIwQ0B9QYPtFFbyp-Fur-XgfQbPPZGxS3_2DKhIUw_Fb_-vK_z6SpiPcC93BuE8KKnR8o7TNBUh_AwztklbtRSwSoOV5uIaVup4zrk-t28Y_MXVj4_13rTyQSHzqTBARRkDLiXg_UAEGgnbqXYnLOlBL9hScNvdCeEgvyj_qJcc_-l1et4vnkoOS6AbvFVJ5-VM9XO4Phw&lib=MA8HCCowuU8ppHojbt22dJUXWGb17bEvz;
 
 // ── Estado global ──
 let members = JSON.parse(localStorage.getItem('party_members') || '[]');
@@ -27,13 +32,12 @@ const authError = document.getElementById('auth-error');
 
 // ── Inicialización ──
 document.addEventListener('DOMContentLoaded', () => {
-    renderTable();
-    updateStats();
     setupTabs();
     setupSearch();
     setupCedulaFormat();
     setupTelefonoFormat();
     setupAuthEnterKey();
+    cargarMiembrosDesdeSheet();
 });
 
 // ══════════════════════════════════════════════════════════════
@@ -263,12 +267,16 @@ function showError(fieldId, message) {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  REGISTRO (CREATE)
+//  REGISTRO (CREATE) — Envía a Google Sheets
 // ══════════════════════════════════════════════════════════════
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     if (!validarFormulario()) return;
+
+    const btnRegistrar = document.getElementById('btn-registrar');
+    btnRegistrar.disabled = true;
+    btnRegistrar.innerHTML = '<span class="spinner"></span> Guardando...';
 
     const member = {
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
@@ -284,12 +292,33 @@ form.addEventListener('submit', (e) => {
         registeredAt: new Date().toISOString()
     };
 
-    members.push(member);
-    guardar();
-    renderTable();
-    updateStats();
-    limpiarFormulario();
-    mostrarToast('¡Miembro registrado exitosamente!');
+    try {
+        if (GOOGLE_SCRIPT_URL !== 'PEGA_TU_URL_AQUI') {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(member)
+            });
+        }
+        members.push(member);
+        guardar();
+        renderTable();
+        updateStats();
+        limpiarFormulario();
+        mostrarToast('¡Miembro registrado exitosamente!');
+    } catch (err) {
+        // Si falla la conexión, guardar localmente de todas formas
+        members.push(member);
+        guardar();
+        renderTable();
+        updateStats();
+        limpiarFormulario();
+        mostrarToast('Guardado localmente (sin conexión a Google Sheets)');
+    } finally {
+        btnRegistrar.disabled = false;
+        btnRegistrar.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> Registrar Miembro`;
+    }
 });
 
 // ══════════════════════════════════════════════════════════════
@@ -371,8 +400,22 @@ function cerrarModal() {
     deleteTargetId = null;
 }
 
-function confirmarEliminar() {
+async function confirmarEliminar() {
     if (!deleteTargetId) return;
+
+    try {
+        if (GOOGLE_SCRIPT_URL !== 'PEGA_TU_URL_AQUI') {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', id: deleteTargetId })
+            });
+        }
+    } catch (err) {
+        console.warn('No se pudo eliminar de Google Sheets:', err);
+    }
+
     members = members.filter(m => m.id !== deleteTargetId);
     guardar();
     renderTable(searchInput.value.toLowerCase());
@@ -408,10 +451,38 @@ function updateStats() {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  PERSISTENCIA
+//  PERSISTENCIA (localStorage como caché + Google Sheets)
 // ══════════════════════════════════════════════════════════════
 function guardar() {
     localStorage.setItem('party_members', JSON.stringify(members));
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CARGAR MIEMBROS DESDE GOOGLE SHEETS
+// ══════════════════════════════════════════════════════════════
+async function cargarMiembrosDesdeSheet() {
+    // Primero mostrar datos locales (caché)
+    renderTable();
+    updateStats();
+
+    if (GOOGLE_SCRIPT_URL === 'PEGA_TU_URL_AQUI') {
+        console.warn('⚠️ Google Sheets no configurado. Usando solo localStorage.');
+        return;
+    }
+
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const data = await response.json();
+
+        if (data.success && data.members) {
+            members = data.members;
+            guardar(); // Actualizar caché local
+            renderTable();
+            updateStats();
+        }
+    } catch (err) {
+        console.warn('No se pudo conectar a Google Sheets. Usando datos locales.', err);
+    }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -475,3 +546,4 @@ function mostrarToast(msg) {
     toast.classList.add('visible');
     toastTimer = setTimeout(() => toast.classList.remove('visible'), 3500);
 }
+
